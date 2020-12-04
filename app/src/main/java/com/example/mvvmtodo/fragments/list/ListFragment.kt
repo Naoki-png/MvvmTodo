@@ -2,15 +2,15 @@ package com.example.mvvmtodo.fragments.list
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.example.mvvmtodo.R
 import com.example.mvvmtodo.data.ToDoViewModel
 import com.example.mvvmtodo.data.models.ToDoData
@@ -70,7 +70,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val recyclerView = binding.recyclerView
         recyclerView.adapter = adapter
         //requireActivity()はnullを返さない
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         //set animator
         recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 300
@@ -82,15 +82,16 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun swipeToDelete(recyclerView: RecyclerView) {
         val swipeToDeleteCallback = object : SwipeToDelete() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val deletedItem = adapter.dataList[viewHolder.adapterPosition]
+                val deletedItemPosition = viewHolder.adapterPosition
+                val deletedItem = adapter.dataList[deletedItemPosition]
                 mToDoViewModel.deleteItem(deletedItem)
 
                 //animator を動かすために必要
-                adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                adapter.notifyItemRemoved(deletedItemPosition)
                 Toast.makeText(requireContext(), "Successfully Removed: '${deletedItem.title}'", Toast.LENGTH_SHORT).show()
 
                 //restore deleted item
-                restoreDeletedDate(viewHolder.itemView, deletedItem, viewHolder.adapterPosition)
+                restoreDeletedDate(viewHolder.itemView, deletedItem, deletedItemPosition)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
@@ -141,6 +142,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val builder = AlertDialog.Builder(requireContext())
             .setPositiveButton("Yes") { _, _ ->
                 mToDoViewModel.deleteAll()
+                Log.d("delete", "delete succeed")
                 Toast.makeText(requireContext(), "Successfully removed everything!", Toast.LENGTH_SHORT).show()
             }
         builder.setNegativeButton("No") { _, _ ->
