@@ -17,6 +17,7 @@ import com.example.mvvmtodo.data.models.ToDoData
 import com.example.mvvmtodo.databinding.FragmentListBinding
 import com.example.mvvmtodo.fragments.SharedViewModel
 import com.example.mvvmtodo.fragments.list.adapter.ListAdapter
+import com.example.mvvmtodo.utils.hideKeyboard
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
@@ -62,6 +63,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         })
 
         setHasOptionsMenu(true)
+
+        hideKeyboard(requireActivity())
 
         return binding.root
     }
