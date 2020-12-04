@@ -54,6 +54,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         //LiveDataの監視
         //以下の部分は、新規ToDo追加のたびに呼ばれる。（追加後、追加画面からリスト画面に遷移する。遷移時、onCreateViewが呼ばれる（このブロック））
         //Observeブロック内のdataは List<ToDoData>
+        //Observerインターフェースはupdate()メソッドだけのSAM。update()はobservableオブジェクト(ここではgetAllData)に
+        //変更があった際に呼ばれる
         mToDoViewModel.getAllData.observe(viewLifecycleOwner, Observer { data ->
             mSharedViewModel.checkIfDatabaseEmpty(data)
             adapter.setData(data)
@@ -121,6 +123,16 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.menu_delete_all -> confirmItemRemove()
+            R.id.menu_priority_high -> {
+                mToDoViewModel.sortByHighPriority.observe(viewLifecycleOwner, Observer { data ->
+                    adapter.setData(data)
+                })
+            }
+            R.id.menu_priority_low -> {
+                mToDoViewModel.sortByLowPriority.observe(viewLifecycleOwner, Observer { data ->
+                    adapter.setData(data)
+                })
+            }
         }
         return super.onOptionsItemSelected(item)
     }

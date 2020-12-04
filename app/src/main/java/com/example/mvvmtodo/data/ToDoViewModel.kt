@@ -15,10 +15,14 @@ class ToDoViewModel(application: Application): AndroidViewModel(application) {
     private val repository : ToDoRepository
 
     val getAllData: LiveData<List<ToDoData>>
+    val sortByHighPriority: LiveData<List<ToDoData>>
+    val sortByLowPriority: LiveData<List<ToDoData>>
 
     init {
         repository = ToDoRepository(toDoDao)
         getAllData = repository.getAllData
+        sortByHighPriority = repository.sortByHighPriority
+        sortByLowPriority = repository.sortByLowPriority
     }
 
     //repositoryのデータ挿入メソッドは、バックグラウンドで行いたいためコールーチンを使う。
